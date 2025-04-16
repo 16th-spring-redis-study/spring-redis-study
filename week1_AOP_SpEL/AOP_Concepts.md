@@ -65,7 +65,7 @@
     - JDK Dynamic Proxy (인터페이스 기반)
     - CGLIB Proxy (클래스 상속 기반)
 
-### 8. Weaving (위빙)
+### 8. Weaving
 - Aspect를 실제 코드에 연결하는 과정이다.
 - 기본적으로 위빙 시점에는 3가지가 (컴파일 타임, 클래스 로딩 시, 런타임) 있는데, (AspectJ 프레임워크 기준) Spring AOP는 순수 Java 기반의 런타임 프록시 방식으로 위빙을 수행한다.
 
@@ -121,10 +121,12 @@
 
 - AspectJ처럼 강력하고 다양한 기능을 제공하는 것은 아니지만, 웹 개발엔 충분한 수준의 JoinPoint 제어를 제공한다. (AspectJ와 경쟁하는 것이 아니라 상호 보완하며 필요한 기능을 사용하자는 취지)
 
-AspectJ | Spring AOP
-순수 AOP 중심 | AOP + IoC 통합 중심
-강력한 위빙/범용 AOP | Spring 개발에 최적화된 비침투적 AOP
-트랜잭션, DI 등 직접 구현 필요 | 스프링 기능과 결합된 AOP 구성 가능
+| 주의점 | 설명 |
+|--------|------|
+| AspectJ | Spring AOP |
+| 순수 AOP 중심 | AOP + IoC 통합 중심 |
+| 강력한 위빙/범용 AOP | Spring 개발에 최적화된 비침투적 AOP |
+| 트랜잭션, DI 등 직접 구현 필요 | 스프링 기능과 결합된 AOP 구성 가능 |
 
 
 ---
