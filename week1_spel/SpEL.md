@@ -29,7 +29,7 @@ SpEL은 표현식을 평가하는 과정은 주로 2가지 구성 요소에 의�
 EvaluationContext는 SpEL 표현식을 평가할 때 필요한 모든 환경 정보를 제공한다. 주로 **StandardEvaluationContext**를 사용하며, 이 컨텍스트는 다음과 같은 기능을 포함한다.
 
 - **루트 객체 설정:**  
-  EvaluationContext에 지정된 루트 객체는 표현식에서 별도의 대상이 명시되지 않은 경우 평가의 기본 기준이 된다.  
+  EvaluationContext에 지정된 루트 객체는 표현식에서 별도의 대상이 명시되지 않은 경우 평가의 기본 기준이 된다.
 
 - **변수 등록:**  
   `setVariable("변수명", 값)`을 통해 추가 데이터를 등록한 후, 표현식 내에서 `#변수명`으로 참조할 수 있다.
@@ -186,6 +186,67 @@ Spring은 PropertyPlaceholderConfigurer 또는 @PropertySource를 통해 외부 
   @Value("#{${some.number} + 2}")
   private int computedNumber;  // 결과: 5 (프로퍼티 값 3 + 2)
 ```
+
+### 2.4. AOP에서의 SpEL 활용
+
+Spring AOP에 SpEL을 도입하면, 어노테이션 표현식으로 런타임 파라미터를 추출·검증하여 메서드 시그니처나 순서에 구애받지 않는 유연한 Advice 구현이 가능하다.
+
+```java
+  // 1) 커스텀 어노테이션
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.RUNTIME)
+  public @interface TeamLeader {
+      String teamId();  // "#teamId"
+      String userId();  // "#userId"
+  }
+
+  // 2) 컨트롤러 메서드
+  @RestController
+  public class TeamController {
+      @TeamLeader(teamId = "#teamId", userId = "#userId")
+      @GetMapping("/teams/{teamId}")
+      public String getTeam(@PathVariable Long teamId,
+                            @RequestParam Long userId) {
+          return "Team " + teamId;
+      }
+  }
+
+  // 3) AOP Advice
+  @Aspect
+  @Component
+  public class TeamLeaderAspect {
+      @Around("@annotation(leader)")
+      public Object checkLeader(ProceedingJoinPoint jp,
+                                TeamLeader leader) throws Throwable {
+          // 파라미터를 변수로 등록
+          StandardEvaluationContext ctx = new StandardEvaluationContext();
+          String[] names = ((MethodSignature) jp.getSignature()).getParameterNames();
+          Object[] args = jp.getArgs();
+          for (int i = 0; i < names.length; i++) {
+              ctx.setVariable(names[i], args[i]);
+          }
+
+          // SpEL로 값 평가
+          ExpressionParser parser = new SpelExpressionParser();
+          Long teamId = parser.parseExpression(leader.teamId()).getValue(ctx, Long.class);
+          Long userId = parser.parseExpression(leader.userId()).getValue(ctx, Long.class);
+
+          // 간단 검증 (예: userId==1L만 허용)
+          if (!userId.equals(1L)) {
+              throw new AccessDeniedException("Not a team leader");
+          }
+
+          return jp.proceed();
+      }
+  }
+```
+
+#### AOP에 SpEL 적용 시 장점
+
+1. **파라미터 추출 단순화**: SpEL 표현식(`#teamId`, `#userId`)으로 파라미터를 명시적으로 바인딩하여, 인덱스 기반 접근(`args[0]`, `args[1]`)보다 가독성이 높다.
+2. **메서드 시그니처 독립성**: 파라미터 순서나 개수 변경 시 AOP 어드바이스 코드를 수정할 필요 없이, 어노테이션 내 표현식만 유효하면 동작한다.
+3. **조건 로직 선언형 처리**: 복잡한 검증 로직(예: `teamId > 0 && userId == #principal.id`)을 Java 코드 대신 표현식으로 어노테이션 속성에 외부화할 수 있어 코드 중복과 분기문을 줄인인다.
+4. **재사용성과 유지보수성**: SpEL API(`ExpressionParser`, `EvaluationContext`)를 사용한 공통 로직을 Advice에서 일원화하여 다양한 메서드에 재사용 가능하며, 검증 규칙 변경 시 표현식만 수정하면 된다.
 
 <br/>
 
