@@ -1,6 +1,6 @@
 # Spring AOP Concepts
 
-## AOP (Aspect Oriented Perspective)
+## AOP (Aspect Oriented Programming)
 - AOP는 OOP를 보완한다. 클래스가 핵심 단위인 OOP와 달리 Aspect를 핵심 단위로 둔다.
 - Aspect는 트랜잭션 관리와 같이, 여러 클래스에 걸쳐 반복되는 **공통 기능(트랜잭션, 로깅, 보안, 캐싱 등)** - 횡단 관심사를 모듈화할 수 있게 만든다.
 - 횡단 관심사: 모든 서비스에서 공통적으로 필요하나 OOP 관점에서 볼 때 각 클래스의 주 목적은 아닌 기능을 말한다. (cross-cutting 하듯이 여러 클래스나 메서드에 공통으로 들어가는 기능)
