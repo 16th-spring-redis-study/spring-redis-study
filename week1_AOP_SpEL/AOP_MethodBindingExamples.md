@@ -1,4 +1,4 @@
-# Advice 메서드에서 대상 정보 바인딩 예시
+# AOP MethodBindingExamples
 
 ## 1. 메서드 파라미터 바인딩 `args`
 
