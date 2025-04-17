@@ -1,6 +1,6 @@
 # Advice 메서드에서 대상 정보 바인딩 예시
 
-## 1. 메서드 파라미터 바인딩 (`args`)
+## 1. 메서드 파라미터 바인딩 `args`
 
 ```java
 @Before("execution(* com.example..*Service.*(..)) && args(userId,..)")
@@ -12,7 +12,7 @@ public void logUserId(Long userId) {
 - 해당 파라미터 값을 Advice에서 바로 사용 가능
 
 
-## 2. 리턴값 바인딩 (@AfterReturning)
+## 2. 리턴값 바인딩 `@AfterReturning`
 
 ```java
 
@@ -29,7 +29,7 @@ public void logResult(Object result) {
 - `returning = "result"`로 리턴값을 바인딩해서 사용 가능
 
 
-## 3. 예외 바인딩 (@AfterThrowing)
+## 3. 예외 바인딩 `@AfterThrowing`
 ``` java
 @AfterThrowing(
     pointcut = "execution(* com.example..*Service.*(..))",
@@ -42,7 +42,7 @@ public void logError(Throwable ex) {
 - 예외 객체를 Advice 메서드에 전달받아 활용 가능
 
 
-## 4. 어노테이션 속성 접근 (@annotation)
+## 4. 어노테이션 속성 접근 `@annotation`
 ```java
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -63,13 +63,15 @@ public void track(TrackAction trackAction) {
 
 ## 5. 다양한 Pointcut 표현식 정리
 
-| 표현식 | 설명 | 예시 |
-| `execution()` | 메서드 실행 지점 | `execution(* com.example..*Service.*(..))` |
-| `args()` | 메서드 인자 조건 | `args(Long, ..)` |
-| `@annotation()` | 메서드에 붙은 어노테이션 | `@annotation(TrackAction)` |
-| `within()` | 클래스 범위 지정 | `within(com.example.service..*)` |
-| `this()` / `target()` | AOP 적용 객체 타입 | `this(MyService)` → 프록시 타입 / `target(MyService)` → 실제 대상 타입 |
-| `bean()` | 빈 이름 기준 | `bean(myService)` |
+
+| 표현식           | 설명                       | 예시                                               |
+|------------------|----------------------------|----------------------------------------------------|
+| `execution()`     | 메서드 실행 지점            | `execution(* com.example..*Service.*(..))`         |
+| `args()`          | 메서드 인자 조건            | `args(Long, ..)`                                   |
+| `@annotation()`   | 메서드에 붙은 어노테이션    | `@annotation(TrackAction)`                         |
+| `within()`        | 클래스 범위 지정            | `within(com.example.service..*)`                   |
+| `this()` / `target()` | AOP 적용 객체 타입    | `this(MyService)` → 프록시 / `target(MyService)` → 실제 객체 |
+| `bean()`          | 빈 이름 기준                | `bean(myService)`                                  |
 
 
 ## 6. SpEL + Advice 조합 예시 (Spring Security)
