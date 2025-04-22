@@ -39,4 +39,37 @@ ApplicationContext는 상위 인터페이스인 BeanFactory의 모든 기능을 
 
 ***
 
+## Metadata 설정
 
+![컨테이너 흐름](../week3_Spring_Container_DI/img/container_flow.png)
+
+Spring Container는 설정 메타데이터를 통해 애플리케이션의 구성 요소를 설정하고 관리
+할지 결정한다.
+
+### Annotation-based configuration
+
+우리가 흔히 쓰는 방식으로 클래스에 애너테이션을 추가하여 빈을 정의하고 의존성을 주입하는
+방법이다. ComponentScan을 통해 빈을 자동으로 탐지하고 등록한다. 
+
+```java
+@Service
+public class MyService {
+    @Autowired
+    private MyRepository repository;
+    
+    // ...
+}
+
+@Repository
+public class MyRepository {
+    // ...
+}
+```
+
+### Java-based configuration
+
+ComponentScan 방식과는 달리 사용자가 명시적으로 빈을 등록하여 관리하는 방식이다.
+
+https://docs.spring.io/spring-framework/reference/core/beans/basics.html
+
+https://sundaland.tistory.com/474
