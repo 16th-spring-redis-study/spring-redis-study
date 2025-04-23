@@ -8,6 +8,10 @@
 
 이를 통해 상호 의존 관계를 설정함.
 
+*IoC
+제어의 역전이란 뜻으로 애플리케이션의 제어 흐름을 개발자가 아닌 프레임워크가 수행한다는 뜻이다. 
+=> 객체의 생성과 의존성 주입을 Spring Container가 수행함. 이때 컨테이너가 프록시로 감싸서 만드는 객체를 빈이라고 하는 거임.
+
 ***
 
 ## ApplicationContext
@@ -66,10 +70,39 @@ public class MyRepository {
 }
 ```
 
+#### @Autowired
+
+Spring Framework 4.3부터는 생성자가 하나만 존재할 경우에는 @Autowired가 필요하지 않지만, 여러 개의 생성자가 존재할 시
+반드시 어떤 생성자를 사용할지 지정해주기 위해 하나의 생성자에는 @Autowired를 추가해야 한다.
+
+
 ### Java-based configuration
 
 ComponentScan 방식과는 달리 사용자가 명시적으로 빈을 등록하여 관리하는 방식이다.
 
-https://docs.spring.io/spring-framework/reference/core/beans/basics.html
+- @Configuration: 애노테이션을 통해 해당 클래스가 빈 정의를 제공하는 역할을 한다는 것을 나타낸다. 
+- @Bean: 애노테이션을 통해 새로운 객체를 생성, 설정, 초기화하여 Spring IoC 컨테이너에서 관리하도록 사용(@Component와도 사용이 가능)
 
-https://sundaland.tistory.com/474
+Spring IoC 컨테이너는 @Bean이 붙은 친구들을 내부에서 프록시로 감싸서 새 객체를 생성하지 않고 항상 같은 인스턴스를 반환하게 한다.
+
+~~~java
+@Configuration
+public class AppConfig {
+
+	@Bean
+	public MyServiceImpl myService() {
+		return new MyServiceImpl();
+	}
+}
+~~~
+
+### @Configuration 클래스에서의 @Bean 메서드 간 호출
+
+일반적인 상황에서는 @Configuration 안에 @Bean 메서드들을 등록하여 관리한다. => full configuration class processing으로
+적용되어 생명 주기를 Spring이 관리
+
+하지만 다음과 같은 상황에서는 lite mode가 적용된다.
+- @Configuration없이 @Bean만 사용
+- @Configuration(proxyBeanMethods = false)
+
+라이트 모드에서는 컨테이너가 개입하지 않아 프록시로 감싸지 않고 일반 자바 호출로 판단하여, 매번 새로운 객체를 만들어낸다.
