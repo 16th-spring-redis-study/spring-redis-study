@@ -29,8 +29,10 @@ Spring AOP는 Aspect를 선언하는 두 가지 방법을 지원한다.
 ![spring-aop-process](img/KangJinJu/aop_process.png)
 
 
-> 스프링은 기본적으로 JDK 프록시를 우선 사용하며, 필요시 자동으로 CGLIB을 선택한다.  
-> 프록시 방식을 강제로 CGLIB로 지정하려면 `<aop:aspectj-autoproxy proxy-target-class="true"/>` 별도 설정을 사용해야 한다.
+- Spring 최신 환경에서는 클래스 기반(CGLIB) 프록시를 기본으로 사용한다.
+- 예를 들어 Spring Boot에서는 별도 설정이 없으면 `proxyTargetClass=true` 설정을 통해 모든 프록시를 CGLIB 방식으로 생성한다.​
+- 이는 인터페이스 유무와 관계없이 프록시를 동일한 방식으로 처리하고, 인터페이스에 정의되지 않은 메서드까지 포함하여 프록시로 처리하기 위함이다.
+
 
 
 ### 프록시 생성 방식에 따른 메서드 인터셉트 원리 (JDK vs CGLIB)
@@ -38,7 +40,7 @@ Spring AOP는 Aspect를 선언하는 두 가지 방법을 지원한다.
 | 생성 방식 | 메서드 인터셉트 원리 |
 |------|--------------------|
 | **JDK 동적 프록시**  | `InvocationHandler`를 통해 모든 메서드 호출을 `invoke()` 메서드로 가로챔 (인터페이스 기반) |
-| **CGLIB 프록시** | 대상 클래스를 상속한 서브클래스를 만들고, 메서드를 오버라이드하여 가로챔 (클래스 기반) |
+| **CGLIB 프록시** | 바이트코드 조작 라이브러리인 CGLIB을 통해 타겟 클래스를 상속한 프록시 클래스를 런타임에 생성하고, `MethodInterceptor`를 통해 메서드 호출을 가로챔 (클래스 기반) |
 
 
 ---
@@ -54,7 +56,7 @@ Spring AOP는 Aspect를 선언하는 두 가지 방법을 지원한다.
 | **빈이 아닌 객체** | AOP는 Spring IoC 컨테이너가 관리하는 Bean에만 적용됨. new로 생성한 객체나 외부 객체에는 적용되지 않음 |
 
 
-### Self-invocation(자기 호출) 문제
+### Self-invocation(내부 호출, 자기 호출) 문제
 - 프록시는 외부에서 메서드가 호출될 때만 Advice를 적용할 수 있다.
 - 내부 호출(this)은 원본 객체 기준이므로 프록시를 우회하게 된다.
 - 즉, `this.inner()`은 프록시 객체의 메서드가 아닌 원본 객체의 메서드를 직접 호출하는 것이기 때문에 AOP가 적용되지 않는다.
