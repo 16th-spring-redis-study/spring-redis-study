@@ -82,7 +82,7 @@
 
 
 - Sharded Pub/Sub의 핵심 원리
-    - 채널도 키처럼 **slot 해시(slot hashing)**를 통해 특정 shard에 할당하고, 그 shard 내부에서만 메시지를 전파하도록 제한한다.
+    - 채널도 키처럼 slot 해시(slot hashing)를 통해 특정 shard에 할당하고, 그 shard 내부에서만 메시지를 전파하도록 제한한다.
     - slot 단위로 샤딩이 가능해졌고, 이를 활용해서 Redis Pub/Sub도 본격적인 대규모 분산 확장이 가능해졌다.
 
 
